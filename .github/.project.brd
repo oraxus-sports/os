@@ -1,0 +1,185 @@
+O-S (Oraxus Sports) Platform
+
+1. Document Overview
+1.1 Purpose
+This Business Requirements Document (BRD) defines the functional and non-functional requirements for Oraxus Sports (O-S), a multi-sport tournament management and analytics platform available on web and mobile. The document outlines user roles, system capabilities, access control, and core business features.
+1.2 Scope
+The O-S platform enables users to:
+Organize tournaments across multiple sports
+Manage players, teams, matches, and statistics
+View live scores and analytics
+Communicate within sport-specific groups
+Access premium features via paid subscriptions
+
+2. Business Objectives
+Provide a centralized platform for organizing and managing sports tournaments.
+Support multiple sports with isolated data per sport.
+Enable role-based access control for different user personas.
+Offer free and premium plans with advanced analytics and AI insights.
+Improve engagement through communication, notifications, and follow features.
+Ensure scalability for future sports, analytics, and streaming integrations.
+
+3. Supported Sports (Initial Release)
+Cricket
+Volleyball
+Soccer
+Pickleball
+The system must be extensible to support additional sports in the future.
+
+4. Platform Overview
+4.1 Application Type
+Web Application
+Mobile Application (iOS & Android)
+4.2 User-Based System
+Users can have multiple roles
+Users can associate with one or more sports
+Sport context is isolated (data and views are sport-specific)
+
+5. User Roles & Permissions
+5.1 Platform Admin / Super Admin
+Description:
+System-level administrators with full control over the platform.
+Permissions:
+Full CRUD access to:
+Users
+Roles and permissions
+Sports
+Teams, players, tournaments, matches
+Assign and revoke user roles
+Manage subscription plans and payments
+View and manage platform-wide analytics
+Moderate content and user activity
+One or more Super Admins are created by default during system initialization.
+
+5.2 Viewer (Default User Role)
+Permissions:
+Create, update, and deactivate own profile
+View:
+Teams
+Tournaments
+Player profiles
+Match statistics
+Live scores
+Streaming content (if available)
+Follow:
+Players (within selected sport)
+Teams
+Tournaments
+
+5.3 Player
+Includes all Viewer permissions plus:
+Create and manage player profiles per sport
+View basic statistics
+Send and receive:
+Team joining requests
+Tournament participation requests
+Receive notifications for approvals and updates
+
+5.4 Premium User (Paid Subscription)
+Includes all Player permissions plus:
+Access to detailed statistics
+AI-powered analytics
+Player comparison across multiple players
+Advanced performance insights and trends
+
+5.5 Official (Team Owner / Manager)
+Permissions:
+CRUD operations on Teams
+Manage team players
+Send and receive tournament joining requests
+Respond to player joining requests
+Receive notifications for approvals and updates
+
+5.6 Organizer
+Description:
+User who creates and manages tournaments.
+Permissions:
+CRUD operations on Tournaments
+Schedule matches
+Manage tournament details
+Send and receive:
+Team joining requests
+Player joining requests
+Approve or reject participation requests
+Receive notifications for tournament-related events
+
+6. Core Functional Requirements
+6.1 User Management
+User registration and authentication
+Role assignment and role switching (if applicable)
+Profile management
+Account deactivation
+
+6.2 Sport Selection & Context Switching
+Default sport is selected upon login
+Users can switch sports from a dropdown/list
+All data views update based on selected sport
+
+6.3 Tournament Management
+Create, update, delete tournaments
+Assign sport, format, and rules
+Manage schedules and matches
+Track tournament status
+
+6.4 Team Management
+Create and manage teams
+Add/remove players
+Handle team participation requests
+
+6.5 Player Management
+Player profiles per sport
+Basic and advanced statistics tracking
+Performance history
+
+6.6 Statistics & Analytics
+Sport-specific statistics
+Live match updates
+AI-driven insights (Premium users)
+Player comparison tools
+
+6.7 Communication & Notifications
+Group-based communication per sport
+Direct user-to-user messaging (optional)
+System notifications for:
+Requests
+Approvals
+Match updates
+Tournament events
+
+6.8 Payments & Subscriptions
+Free and Paid subscription models
+Integration with payment gateway
+Subscription management
+Access control based on plan
+
+7. Non-Functional Requirements
+7.1 Performance
+Support concurrent users and live match updates
+Low-latency communication and notifications
+7.2 Security
+Secure authentication and authorization
+Role-based access control
+Data isolation per sport
+Secure payment processing
+7.3 Scalability
+Ability to add new sports
+Handle growing user base and tournaments
+7.4 Availability
+High availability for live scoring and tournaments
+Mobile and web parity in features
+
+8. Assumptions
+Users may have multiple roles simultaneously
+Statistics and analytics vary by sport
+Live streaming integration may depend on third-party services
+
+9. Out of Scope (Initial Phase)
+Betting or gambling features
+Fantasy league features
+Offline access
+
+10. Success Metrics
+User engagement per sport
+Tournament creation and participation rates
+Conversion from free to premium users
+System performance during live events
