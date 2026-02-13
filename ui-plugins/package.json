@@ -13,6 +13,8 @@
     "build:platform": "cd platform && npm run build",
     "build:all": "npm run build:components && npm run build:auth && npm run build:platform",
     "build:prod": "node scripts/build-production.js",
+    "deploy:aws": "bash aws-infrastructure/deploy-to-aws.sh production",
+    "deploy:aws:staging": "bash aws-infrastructure/deploy-to-aws.sh staging",
     "install:all": "npm install && cd components && npm install && cd ../auth && npm install && cd ../platform && npm install",
     "serve:components": "cd components/dist && npx serve -p 3001",
     "serve:auth": "cd auth/dist && npx serve -p 3002",

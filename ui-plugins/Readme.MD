@@ -1,7 +1,19 @@
 # Microfrontend Authentication Setup
 
 ## Overview
-This project now uses a dedicated **auth microfrontend** for authentication with Module Federation.
+This project uses **Module Federation** for microfrontend architecture with dedicated auth module.
+
+**Deployment Strategy**:
+- 🔧 **Development**: Each microfrontend runs independently (`npm start`)
+- ☁️ **Production**: All deploy together to AWS infrastructure
+
+## 🚀 Quick Links
+
+- 📖 [Development Setup](#setup-instructions) - Run locally
+- ☁️ **[AWS Deployment](AWS-QUICKSTART.md)** - **Deploy to AWS (Recommended)**
+- 🏗️ [Production Build Guide](PRODUCTION-BUILD.md) - Build for production
+- 🔄 [CI/CD Setup](CI-CD-README.md) - Automated deployments
+- 🌐 [Complete Deployment Guide](DEPLOYMENT.md) - All deployment options
 
 ## Structure
 
@@ -141,53 +153,83 @@ remotes: {
 
 ## Production Deployment
 
-### Quick Start
+### AWS Deployment (Recommended for Your Setup) ☁️
+
+**Your apps run separately in development, but deploy together to AWS in production.**
+
+#### Quick Deploy
 
 ```bash
-# Install root dependencies
-npm install
+# One-time setup (creates AWS infrastructure)
+# See: AWS-QUICKSTART.md
 
-# Build all microfrontends for production
-COMPONENTS_URL=https://components.yourdomain.com \
-AUTH_URL=https://auth.yourdomain.com \
-PLATFORM_URL=https://platform.yourdomain.com \
-npm run build:prod
+# Deploy to production
+npm run deploy:aws
+
+# Or deploy to staging
+npm run deploy:aws:staging
 ```
 
-### Environment Variables
+**Complete Guide**: [AWS-QUICKSTART.md](AWS-QUICKSTART.md) or [AWS-DEPLOYMENT.md](AWS-DEPLOYMENT.md)
 
-Create a `.env.production` file or set environment variables:
+#### AWS Architecture
+
+**Development**: Each app runs independently
+- Components: `http://localhost:3001`
+- Auth: `http://localhost:3002`
+- Platform: `http://localhost:3000`
+
+**Production**: All apps deployed to same AWS infrastructure
+- Components: `https://app.yourdomain.com/components/`
+- Auth: `https://app.yourdomain.com/auth/`
+- Platform: `https://app.yourdomain.com/`
+
+---
+
+### Alternative: Netlify/Vercel (Quick Testing)
+
+For quick testing or if you don't want to set up AWS:
 
 ```bash
-COMPONENTS_URL=https://components.yourdomain.com
-AUTH_URL=https://auth.yourdomain.com  
-PUBLIC_PATH=https://platform.yourdomain.com/
+npm install -g netlify-cli
+netlify login
+cd components && netlify deploy --prod
+cd ../auth && netlify deploy --prod
+cd ../platform && netlify deploy --prod
 ```
 
-### Build Scripts
+**Guide**: [NETLIFY-VERCEL-DEPLOYMENT.md](NETLIFY-VERCEL-DEPLOYMENT.md)
+
+---
+
+### Available Scripts
 
 ```bash
-# Build all microfrontends
-npm run build:all
+# Development
+npm run start:all       # Start all microfrontends locally
 
-# Build for production with custom URLs
-npm run build:prod
+# Production (AWS)
+npm run deploy:aws      # Build & deploy to AWS production
+npm run deploy:aws:staging  # Build & deploy to AWS staging
 
-# Start all in development
-npm run start:all
+# Manual build
+npm run build:all       # Build all for production
+npm run build:prod      # Build with environment URLs
 
-# Install all dependencies
-npm run install:all
+# Utilities
+npm run install:all     # Install all dependencies
+npm run clean           # Clean all dist folders
 ```
 
-### Deployment Order
+### Documentation
 
-**IMPORTANT:** Always deploy in this order:
-1. Deploy `components/dist` → Components URL
-2. Deploy `auth/dist` → Auth URL  
-3. Deploy `platform/dist` → Platform URL (last!)
-
-See [DEPLOYMENT.md](./DEPLOYMENT.md) for detailed production deployment guide.
+| Guide | Description |
+|-------|-------------|
+| **[AWS-QUICKSTART.md](AWS-QUICKSTART.md)** | **Quick start for AWS deployment** |
+| [AWS-DEPLOYMENT.md](AWS-DEPLOYMENT.md) | AWS deployment overview |
+| [aws-infrastructure/setup-guide.md](aws-infrastructure/setup-guide.md) | Detailed AWS setup |
+| [CI-CD-README.md](CI-CD-README.md) | Automated CI/CD options |
+| [DEPLOYMENT.md](DEPLOYMENT.md) | All deployment options |
 
 ## Development Notes
 

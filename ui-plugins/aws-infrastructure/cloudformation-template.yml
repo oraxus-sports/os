@@ -1,0 +1,419 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Microfrontend Infrastructure - S3, CloudFront, and Route53'
+
+Parameters:
+  DomainName:
+    Type: String
+    Description: Your domain name (e.g., app.yourdomain.com)
+    Default: app.yourdomain.com
+  
+  CertificateArn:
+    Type: String
+    Description: ARN of ACM certificate for your domain
+    Default: ''
+  
+  DeploymentType:
+    Type: String
+    Description: Use single domain with paths or subdomains
+    AllowedValues:
+      - single-domain
+      - subdomains
+    Default: single-domain
+
+Conditions:
+  UseSubdomains: !Equals [!Ref DeploymentType, 'subdomains']
+  UseSingleDomain: !Equals [!Ref DeploymentType, 'single-domain']
+
+Resources:
+  # ============ S3 Buckets ============
+  
+  ComponentsBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !If
+        - UseSubdomains
+        - !Sub 'components.${DomainName}'
+        - !Sub '${DomainName}-components'
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      CorsConfiguration:
+        CorsRules:
+          - AllowedHeaders: ['*']
+            AllowedMethods: [GET, HEAD]
+            AllowedOrigins: ['*']
+            MaxAge: 3600
+
+  AuthBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !If
+        - UseSubdomains
+        - !Sub 'auth.${DomainName}'
+        - !Sub '${DomainName}-auth'
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      CorsConfiguration:
+        CorsRules:
+          - AllowedHeaders: ['*']
+            AllowedMethods: [GET, HEAD]
+            AllowedOrigins: ['*']
+            MaxAge: 3600
+
+  PlatformBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !If
+        - UseSubdomains
+        - !Ref DomainName
+        - !Sub '${DomainName}-platform'
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
+  # ============ CloudFront Origin Access Identity ============
+  
+  CloudFrontOAI:
+    Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
+    Properties:
+      CloudFrontOriginAccessIdentityConfig:
+        Comment: !Sub 'OAI for ${DomainName}'
+
+  # ============ S3 Bucket Policies ============
+  
+  ComponentsBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref ComponentsBucket
+      PolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              CanonicalUser: !GetAtt CloudFrontOAI.S3CanonicalUserId
+            Action: 's3:GetObject'
+            Resource: !Sub '${ComponentsBucket.Arn}/*'
+
+  AuthBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref AuthBucket
+      PolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              CanonicalUser: !GetAtt CloudFrontOAI.S3CanonicalUserId
+            Action: 's3:GetObject'
+            Resource: !Sub '${AuthBucket.Arn}/*'
+
+  PlatformBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref PlatformBucket
+      PolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              CanonicalUser: !GetAtt CloudFrontOAI.S3CanonicalUserId
+            Action: 's3:GetObject'
+            Resource: !Sub '${PlatformBucket.Arn}/*'
+
+  # ============ CloudFront Distribution (Single Domain with Paths) ============
+  
+  SingleDomainDistribution:
+    Type: AWS::CloudFront::Distribution
+    Condition: UseSingleDomain
+    Properties:
+      DistributionConfig:
+        Enabled: true
+        Comment: !Sub 'Microfrontend - ${DomainName}'
+        Aliases:
+          - !Ref DomainName
+        ViewerCertificate:
+          AcmCertificateArn: !Ref CertificateArn
+          SslSupportMethod: sni-only
+          MinimumProtocolVersion: TLSv1.2_2021
+        DefaultRootObject: index.html
+        
+        Origins:
+          # Platform Origin
+          - Id: platform-origin
+            DomainName: !GetAtt PlatformBucket.RegionalDomainName
+            S3OriginConfig:
+              OriginAccessIdentity: !Sub 'origin-access-identity/cloudfront/${CloudFrontOAI}'
+          
+          # Components Origin
+          - Id: components-origin
+            DomainName: !GetAtt ComponentsBucket.RegionalDomainName
+            S3OriginConfig:
+              OriginAccessIdentity: !Sub 'origin-access-identity/cloudfront/${CloudFrontOAI}'
+          
+          # Auth Origin
+          - Id: auth-origin
+            DomainName: !GetAtt AuthBucket.RegionalDomainName
+            S3OriginConfig:
+              OriginAccessIdentity: !Sub 'origin-access-identity/cloudfront/${CloudFrontOAI}'
+        
+        CacheBehaviors:
+          # Components path
+          - PathPattern: '/components/*'
+            TargetOriginId: components-origin
+            ViewerProtocolPolicy: redirect-to-https
+            AllowedMethods: [GET, HEAD, OPTIONS]
+            CachedMethods: [GET, HEAD]
+            Compress: true
+            ForwardedValues:
+              QueryString: false
+              Headers:
+                - Access-Control-Request-Headers
+                - Access-Control-Request-Method
+                - Origin
+              Cookies:
+                Forward: none
+            MinTTL: 0
+            DefaultTTL: 86400
+            MaxTTL: 31536000
+          
+          # Auth path
+          - PathPattern: '/auth/*'
+            TargetOriginId: auth-origin
+            ViewerProtocolPolicy: redirect-to-https
+            AllowedMethods: [GET, HEAD, OPTIONS]
+            CachedMethods: [GET, HEAD]
+            Compress: true
+            ForwardedValues:
+              QueryString: false
+              Headers:
+                - Access-Control-Request-Headers
+                - Access-Control-Request-Method
+                - Origin
+              Cookies:
+                Forward: none
+            MinTTL: 0
+            DefaultTTL: 86400
+            MaxTTL: 31536000
+          
+          # Special handling for remoteEntry.js (short cache)
+          - PathPattern: '/components/remoteEntry.js'
+            TargetOriginId: components-origin
+            ViewerProtocolPolicy: redirect-to-https
+            AllowedMethods: [GET, HEAD, OPTIONS]
+            CachedMethods: [GET, HEAD]
+            MinTTL: 0
+            DefaultTTL: 300
+            MaxTTL: 300
+            ForwardedValues:
+              QueryString: false
+              Headers:
+                - Access-Control-Request-Headers
+                - Access-Control-Request-Method
+                - Origin
+              Cookies:
+                Forward: none
+          
+          - PathPattern: '/auth/remoteEntry.js'
+            TargetOriginId: auth-origin
+            ViewerProtocolPolicy: redirect-to-https
+            AllowedMethods: [GET, HEAD, OPTIONS]
+            CachedMethods: [GET, HEAD]
+            MinTTL: 0
+            DefaultTTL: 300
+            MaxTTL: 300
+            ForwardedValues:
+              QueryString: false
+              Headers:
+                - Access-Control-Request-Headers
+                - Access-Control-Request-Method
+                - Origin
+              Cookies:
+                Forward: none
+        
+        DefaultCacheBehavior:
+          TargetOriginId: platform-origin
+          ViewerProtocolPolicy: redirect-to-https
+          AllowedMethods: [GET, HEAD, OPTIONS]
+          CachedMethods: [GET, HEAD]
+          Compress: true
+          ForwardedValues:
+            QueryString: false
+            Cookies:
+              Forward: none
+          MinTTL: 0
+          DefaultTTL: 86400
+          MaxTTL: 31536000
+        
+        CustomErrorResponses:
+          - ErrorCode: 404
+            ResponseCode: 200
+            ResponsePagePath: /index.html
+          - ErrorCode: 403
+            ResponseCode: 200
+            ResponsePagePath: /index.html
+
+  # ============ CloudFront Distributions (Subdomains) ============
+  
+  ComponentsDistribution:
+    Type: AWS::CloudFront::Distribution
+    Condition: UseSubdomains
+    Properties:
+      DistributionConfig:
+        Enabled: true
+        Comment: !Sub 'Components - ${DomainName}'
+        Aliases:
+          - !Sub 'components.${DomainName}'
+        ViewerCertificate:
+          AcmCertificateArn: !Ref CertificateArn
+          SslSupportMethod: sni-only
+        DefaultRootObject: index.html
+        Origins:
+          - Id: components-origin
+            DomainName: !GetAtt ComponentsBucket.RegionalDomainName
+            S3OriginConfig:
+              OriginAccessIdentity: !Sub 'origin-access-identity/cloudfront/${CloudFrontOAI}'
+        DefaultCacheBehavior:
+          TargetOriginId: components-origin
+          ViewerProtocolPolicy: redirect-to-https
+          AllowedMethods: [GET, HEAD, OPTIONS]
+          CachedMethods: [GET, HEAD]
+          Compress: true
+          ForwardedValues:
+            QueryString: false
+            Headers:
+              - Access-Control-Request-Headers
+              - Access-Control-Request-Method
+              - Origin
+            Cookies:
+              Forward: none
+        CustomErrorResponses:
+          - ErrorCode: 404
+            ResponseCode: 200
+            ResponsePagePath: /index.html
+
+  AuthDistribution:
+    Type: AWS::CloudFront::Distribution
+    Condition: UseSubdomains
+    Properties:
+      DistributionConfig:
+        Enabled: true
+        Comment: !Sub 'Auth - ${DomainName}'
+        Aliases:
+          - !Sub 'auth.${DomainName}'
+        ViewerCertificate:
+          AcmCertificateArn: !Ref CertificateArn
+          SslSupportMethod: sni-only
+        DefaultRootObject: index.html
+        Origins:
+          - Id: auth-origin
+            DomainName: !GetAtt AuthBucket.RegionalDomainName
+            S3OriginConfig:
+              OriginAccessIdentity: !Sub 'origin-access-identity/cloudfront/${CloudFrontOAI}'
+        DefaultCacheBehavior:
+          TargetOriginId: auth-origin
+          ViewerProtocolPolicy: redirect-to-https
+          AllowedMethods: [GET, HEAD, OPTIONS]
+          CachedMethods: [GET, HEAD]
+          Compress: true
+          ForwardedValues:
+            QueryString: false
+            Headers:
+              - Access-Control-Request-Headers
+              - Access-Control-Request-Method
+              - Origin
+            Cookies:
+              Forward: none
+        CustomErrorResponses:
+          - ErrorCode: 404
+            ResponseCode: 200
+            ResponsePagePath: /index.html
+
+  PlatformDistribution:
+    Type: AWS::CloudFront::Distribution
+    Condition: UseSubdomains
+    Properties:
+      DistributionConfig:
+        Enabled: true
+        Comment: !Sub 'Platform - ${DomainName}'
+        Aliases:
+          - !Ref DomainName
+        ViewerCertificate:
+          AcmCertificateArn: !Ref CertificateArn
+          SslSupportMethod: sni-only
+        DefaultRootObject: index.html
+        Origins:
+          - Id: platform-origin
+            DomainName: !GetAtt PlatformBucket.RegionalDomainName
+            S3OriginConfig:
+              OriginAccessIdentity: !Sub 'origin-access-identity/cloudfront/${CloudFrontOAI}'
+        DefaultCacheBehavior:
+          TargetOriginId: platform-origin
+          ViewerProtocolPolicy: redirect-to-https
+          AllowedMethods: [GET, HEAD, OPTIONS]
+          CachedMethods: [GET, HEAD]
+          Compress: true
+          ForwardedValues:
+            QueryString: false
+            Cookies:
+              Forward: none
+        CustomErrorResponses:
+          - ErrorCode: 404
+            ResponseCode: 200
+            ResponsePagePath: /index.html
+
+Outputs:
+  ComponentsBucketName:
+    Description: S3 bucket for components
+    Value: !Ref ComponentsBucket
+    Export:
+      Name: !Sub '${AWS::StackName}-ComponentsBucket'
+
+  AuthBucketName:
+    Description: S3 bucket for auth
+    Value: !Ref AuthBucket
+    Export:
+      Name: !Sub '${AWS::StackName}-AuthBucket'
+
+  PlatformBucketName:
+    Description: S3 bucket for platform
+    Value: !Ref PlatformBucket
+    Export:
+      Name: !Sub '${AWS::StackName}-PlatformBucket'
+
+  DistributionId:
+    Description: CloudFront Distribution ID
+    Value: !If
+      - UseSingleDomain
+      - !Ref SingleDomainDistribution
+      - !Ref PlatformDistribution
+    Export:
+      Name: !Sub '${AWS::StackName}-DistributionId'
+
+  DistributionDomain:
+    Description: CloudFront Distribution Domain
+    Value: !If
+      - UseSingleDomain
+      - !GetAtt SingleDomainDistribution.DomainName
+      - !GetAtt PlatformDistribution.DomainName
+
+  ComponentsURL:
+    Description: Components URL
+    Value: !If
+      - UseSingleDomain
+      - !Sub 'https://${DomainName}/components'
+      - !Sub 'https://components.${DomainName}'
+
+  AuthURL:
+    Description: Auth URL
+    Value: !If
+      - UseSingleDomain
+      - !Sub 'https://${DomainName}/auth'
+      - !Sub 'https://auth.${DomainName}'
+
+  PlatformURL:
+    Description: Platform URL
+    Value: !Sub 'https://${DomainName}'
