@@ -2,15 +2,26 @@ const ModuleFederationPlugin = require("webpack/lib/container/ModuleFederationPl
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const path = require("path");
 
-module.exports = {
+module.exports = (env, argv) => {
+  const isProduction = argv.mode === 'production';
+  const PUBLIC_PATH = process.env.PUBLIC_PATH || 
+    (isProduction ? 'https://components.yourdomain.com/' : 'http://localhost:3001/');
+
+  return {
   entry: "./src/index.js",
-  mode: "development",
+  mode: argv.mode || "development",
   devServer: {
     port: 3001,
     static: path.join(__dirname, "dist"),
     headers: {
       "Access-Control-Allow-Origin": "*",
     },
+  },
+  output: {
+    publicPath: PUBLIC_PATH,
+    path: path.resolve(__dirname, 'dist'),
+    filename: isProduction ? '[name].[contenthash].js' : '[name].js',
+    clean: true,
   },
   resolve: {
     extensions: [".js", ".jsx"],
@@ -46,4 +57,5 @@ module.exports = {
       template: "./public/index.html",
     }),
   ],
+  };
 };

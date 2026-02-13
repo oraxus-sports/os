@@ -1,0 +1,26 @@
+{
+  "name": "sports-os-ui-plugins",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Sports OS Microfrontend Applications",
+  "scripts": {
+    "start:components": "cd components && npm start",
+    "start:auth": "cd auth && npm start",
+    "start:platform": "cd platform && npm start",
+    "start:all": "concurrently \"npm:start:components\" \"npm:start:auth\" \"npm:start:platform\"",
+    "build:components": "cd components && npm run build",
+    "build:auth": "cd auth && npm run build",
+    "build:platform": "cd platform && npm run build",
+    "build:all": "npm run build:components && npm run build:auth && npm run build:platform",
+    "build:prod": "node scripts/build-production.js",
+    "install:all": "npm install && cd components && npm install && cd ../auth && npm install && cd ../platform && npm install",
+    "serve:components": "cd components/dist && npx serve -p 3001",
+    "serve:auth": "cd auth/dist && npx serve -p 3002",
+    "serve:platform": "cd platform/dist && npx serve -p 3000",
+    "clean": "rimraf components/dist auth/dist platform/dist"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "rimraf": "^5.0.5"
+  }
+}

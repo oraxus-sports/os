@@ -139,56 +139,6 @@ remotes: {
 6. **Token Refresh**: Implement token refresh logic
 7. **Remove Old Components**: Delete old Login from components folder
 
-## Production Deployment
-
-### Quick Start
-
-```bash
-# Install root dependencies
-npm install
-
-# Build all microfrontends for production
-COMPONENTS_URL=https://components.yourdomain.com \
-AUTH_URL=https://auth.yourdomain.com \
-PLATFORM_URL=https://platform.yourdomain.com \
-npm run build:prod
-```
-
-### Environment Variables
-
-Create a `.env.production` file or set environment variables:
-
-```bash
-COMPONENTS_URL=https://components.yourdomain.com
-AUTH_URL=https://auth.yourdomain.com  
-PUBLIC_PATH=https://platform.yourdomain.com/
-```
-
-### Build Scripts
-
-```bash
-# Build all microfrontends
-npm run build:all
-
-# Build for production with custom URLs
-npm run build:prod
-
-# Start all in development
-npm run start:all
-
-# Install all dependencies
-npm run install:all
-```
-
-### Deployment Order
-
-**IMPORTANT:** Always deploy in this order:
-1. Deploy `components/dist` → Components URL
-2. Deploy `auth/dist` → Auth URL  
-3. Deploy `platform/dist` → Platform URL (last!)
-
-See [DEPLOYMENT.md](./DEPLOYMENT.md) for detailed production deployment guide.
-
 ## Development Notes
 
 - Auth runs independently on port 3002
@@ -196,4 +146,3 @@ See [DEPLOYMENT.md](./DEPLOYMENT.md) for detailed production deployment guide.
 - Shared dependencies (React, React-DOM, React-Router) are singletons
 - Tailwind CSS configured with Summer Sunset colors
 - AuthContext provides global auth state to all consuming apps
-- Environment-based configuration supports dev/staging/production

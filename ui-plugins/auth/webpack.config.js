@@ -2,9 +2,14 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ModuleFederationPlugin = require('webpack/lib/container/ModuleFederationPlugin');
 const path = require('path');
 
-module.exports = {
+module.exports = (env, argv) => {
+  const isProduction = argv.mode === 'production';
+  const PUBLIC_PATH = process.env.PUBLIC_PATH || 
+    (isProduction ? 'https://auth.yourdomain.com/' : 'http://localhost:3002/');
+
+  return {
   entry: './src/index.js',
-  mode: 'development',
+  mode: argv.mode || 'development',
   devServer: {
     port: 3002,
     hot: true,
@@ -14,7 +19,9 @@ module.exports = {
     },
   },
   output: {
-    publicPath: 'http://localhost:3002/',
+    publicPath: PUBLIC_PATH,
+    path: path.resolve(__dirname, 'dist'),
+    filename: isProduction ? '[name].[contenthash].js' : '[name].js',
     clean: true,
   },
   resolve: {
@@ -81,4 +88,5 @@ module.exports = {
       template: './public/index.html',
     }),
   ],
+  };
 };
