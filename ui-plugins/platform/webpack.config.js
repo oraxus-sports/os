@@ -6,6 +6,7 @@ module.exports = {
   mode: "development",
   devServer: {
     port: 3000,
+    historyApiFallback: true,
     headers: {
       "Access-Control-Allow-Origin": "*",
     },
@@ -46,17 +47,21 @@ module.exports = {
       remotes: {
         remoteComponents:
           "remoteComponents@http://localhost:3001/remoteEntry.js",
+        authApp:
+          "authApp@http://localhost:3002/remoteEntry.js",
       },
       shared: {
         react: {
           singleton: true,
-          eager: true,
           requiredVersion: "^18.0.0",
         },
         "react-dom": {
           singleton: true,
-          eager: true,
           requiredVersion: "^18.0.0",
+        },
+        "react-router-dom": {
+          singleton: true,
+          requiredVersion: "^6.20.0",
         },
       },
     }),
@@ -65,3 +70,4 @@ module.exports = {
     }),
   ],
 };
+
