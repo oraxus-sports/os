@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { View, Text, ImageBackground, ScrollView, Pressable, StyleSheet } from 'react-native';
 import { SignUpMobile } from '../components/SignUpMobile';
+import SignInMobile from '../components/SignIn';
 import { useTranslation } from 'react-i18next';
 import './i18n';
 
@@ -21,8 +22,17 @@ export default function SignUpScreen() {
     }, 2000);
   };
 
-  const handleSignInClick = () => {
-    console.log('Navigate to sign in');
+  const [showSignIn, setShowSignIn] = useState(false);
+
+  const handleSignInClick = () => setShowSignIn(true);
+
+  const handleSignIn = async (data: any) => {
+    setIsLoading(true);
+    console.log('Sign in data:', data);
+    setTimeout(() => {
+      setIsLoading(false);
+      alert(`Signed in (method: ${data.method ?? data.signInMethod})`);
+    }, 1200);
   };
 
   const changeLanguage = (lng: string) => {
@@ -66,13 +76,17 @@ export default function SignUpScreen() {
           ))}
         </View>
 
-        {/* Sign Up Form */}
+        {/* Sign Up / Sign In Form */}
         <View style={styles.formCard}>
-          <SignUpMobile
-            onSubmit={handleSignUp}
-            onSignInClick={handleSignInClick}
-            isLoading={isLoading}
-          />
+          {showSignIn ? (
+            <SignInMobile onSubmit={handleSignIn} onSignUp={() => setShowSignIn(false)} />
+          ) : (
+            <SignUpMobile
+              onSubmit={handleSignUp}
+              onSignInClick={handleSignInClick}
+              isLoading={isLoading}
+            />
+          )}
         </View>
       </ScrollView>
     </ImageBackground>

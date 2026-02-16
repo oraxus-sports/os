@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { SignUp } from '~/components/SignUp';
+import SignIn from '~/components/SignIn';
 import { useTranslation } from 'react-i18next';
 import { Globe } from 'lucide-react';
+import ThemeSelector from '~/components/ThemeSelector';
 
 // Use shared background from lib/assets
 // prefer the shared placeholder; copy a JPG/PNG into `web/src/assets` using the copy script
@@ -10,6 +12,7 @@ import sportsBackground from '~/assets/sports-background.jpg';
 function App() {
   const { i18n } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
+  const [showSignIn, setShowSignIn] = useState(false);
 
   const handleSignUp = async (data: any) => {
     setIsLoading(true);
@@ -22,8 +25,15 @@ function App() {
     }, 2000);
   };
 
-  const handleSignInClick = () => {
-    console.log('Navigate to sign in');
+  const handleSignInClick = () => setShowSignIn(true);
+
+  const handleSignIn = async (data: any) => {
+    setIsLoading(true);
+    console.log('Sign in data:', data);
+    setTimeout(() => {
+      setIsLoading(false);
+      alert(`Signed in (method: ${data.method ?? data.signInMethod})`);
+    }, 1200);
   };
 
   const changeLanguage = (lng: string) => {
@@ -60,17 +70,22 @@ function App() {
             <option value="te" className="text-gray-900">తెలుగు</option>
             <option value="hi" className="text-gray-900">हिन्दी</option>
           </select>
+          <ThemeSelector />
         </div>
       </div>
 
       {/* Sign Up Form Card */}
       <div className="relative z-10 w-full max-w-md">
         <div className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-md rounded-2xl shadow-2xl p-8 md:p-10">
-          <SignUp 
-            onSubmit={handleSignUp}
-            onSignInClick={handleSignInClick}
-            isLoading={isLoading}
-          />
+          {showSignIn ? (
+            <SignIn onSubmit={handleSignIn} onSignUpClick={() => setShowSignIn(false)} isLoading={isLoading} />
+          ) : (
+            <SignUp 
+              onSubmit={handleSignUp}
+              onSignInClick={handleSignInClick}
+              isLoading={isLoading}
+            />
+          )}
         </div>
       </div>
     </div>

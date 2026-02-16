@@ -155,7 +155,7 @@ export const SignUp: React.FC<SignUpProps> = ({ onSubmit, onSignInClick, isLoadi
                 'focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
                 signInMethod === 'email'
                   ? 'border-primary-500 bg-primary-50 text-primary-700 dark:bg-primary-900 dark:text-primary-300'
-                  : 'border-gray-300 hover:border-gray-400 dark:border-gray-700 dark:hover:border-gray-600'
+                  : 'bg-gray-100 text-gray-900 dark:bg-white/10 dark:text-white border'
               )}
               aria-pressed={signInMethod === 'email'}
             >
@@ -170,7 +170,7 @@ export const SignUp: React.FC<SignUpProps> = ({ onSubmit, onSignInClick, isLoadi
                 'focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
                 signInMethod === 'phone'
                   ? 'border-primary-500 bg-primary-50 text-primary-700 dark:bg-primary-900 dark:text-primary-300'
-                  : 'border-gray-300 hover:border-gray-400 dark:border-gray-700 dark:hover:border-gray-600'
+                  : 'bg-gray-100 text-gray-900 dark:bg-white/10 dark:text-white border'
               )}
               aria-pressed={signInMethod === 'phone'}
             >
