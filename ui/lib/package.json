@@ -1,0 +1,35 @@
+{
+  "name": "@sports-os/lib",
+  "version": "1.0.0",
+  "description": "Shared component library for sports management app",
+  "main": "index.ts",
+  "scripts": {
+    "test": "jest",
+    "lint": "eslint .",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-i18next": "^13.5.0",
+    "i18next": "^23.7.0",
+    "axios": "^1.6.0",
+    "@reduxjs/toolkit": "^2.0.1",
+    "react-redux": "^9.0.4",
+    "redux-persist": "^6.0.0",
+    "react-hook-form": "^7.49.0",
+    "zod": "^3.22.4",
+    "@hookform/resolvers": "^3.3.3",
+    "clsx": "^2.1.0",
+    "tailwind-merge": "^2.2.0",
+    "lucide-react": "^0.305.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "typescript": "^5.3.3",
+    "tailwindcss": "^3.4.0",
+    "autoprefixer": "^10.4.16",
+    "postcss": "^8.4.32"
+  }
+}

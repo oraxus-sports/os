@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080">
+  <defs>
+    <linearGradient id="g" x1="0" x2="1">
+      <stop offset="0" stop-color="#0ea5e9" stop-opacity="0.9"/>
+      <stop offset="1" stop-color="#6ab547" stop-opacity="0.9"/>
+    </linearGradient>
+  </defs>
+  <rect width="100%" height="100%" fill="url(#g)" />
+  <g transform="translate(160,120) scale(1.1)">
+    <ellipse cx="700" cy="450" rx="420" ry="260" fill="#ffffff" fill-opacity="0.06" />
+    <text x="200" y="300" font-family="Segoe UI, Roboto, Arial" font-size="88" fill="#ffffff" opacity="0.95">Sports Management</text>
+    <text x="200" y="380" font-family="Segoe UI, Roboto, Arial" font-size="28" fill="#ffffff" opacity="0.9">Sign up to manage teams, matches and players</text>
+  </g>
+</svg>
