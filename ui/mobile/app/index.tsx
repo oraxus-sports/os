@@ -1,7 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { View, Text, ImageBackground, ScrollView, Pressable, StyleSheet } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SignUpMobile } from '../components/SignUpMobile';
-import SignInMobile from '../components/SignIn';
+import SignInMobile from './components/SignIn';
+import ThemeSelector from '../components/ThemeSelector';
 import { useTranslation } from 'react-i18next';
 import './i18n';
 
@@ -23,6 +25,23 @@ export default function SignUpScreen() {
   };
 
   const [showSignIn, setShowSignIn] = useState(false);
+  const [theme, setTheme] = useState<'light' | 'dark'>('dark');
+  // load persisted theme and language on mount
+  useEffect(() => {
+    (async () => {
+      try {
+        const storedTheme = await AsyncStorage.getItem('@sports:theme');
+        if (storedTheme === 'light' || storedTheme === 'dark') setTheme(storedTheme);
+
+        const storedLang = await AsyncStorage.getItem('@sports:lang');
+        if (storedLang) {
+          i18n.changeLanguage(storedLang);
+        }
+      } catch (e) {
+        // ignore
+      }
+    })();
+  }, []);
 
   const handleSignInClick = () => setShowSignIn(true);
 
@@ -37,6 +56,7 @@ export default function SignUpScreen() {
 
   const changeLanguage = (lng: string) => {
     i18n.changeLanguage(lng);
+    try { AsyncStorage.setItem('@sports:lang', lng); } catch (e) {}
   };
 
   const languages = [
@@ -55,6 +75,13 @@ export default function SignUpScreen() {
       <View style={styles.overlay} />
       
       <ScrollView contentContainerStyle={styles.container}>
+        <ThemeSelector
+          theme={theme}
+          onChange={async (t) => {
+            setTheme(t);
+            try { await AsyncStorage.setItem('@sports:theme', t); } catch (e) {}
+          }}
+        />
         {/* Language Switcher */}
         <View style={styles.languageContainer}>
           {languages.map((lang) => (
@@ -77,7 +104,7 @@ export default function SignUpScreen() {
         </View>
 
         {/* Sign Up / Sign In Form */}
-        <View style={styles.formCard}>
+        <View style={[styles.formCard, theme === 'light' ? styles.formCardLight : styles.formCardDark]}>
           {showSignIn ? (
             <SignInMobile onSubmit={handleSignIn} onSignUp={() => setShowSignIn(false)} />
           ) : (
@@ -133,5 +160,11 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.95)',
     borderRadius: 20,
     padding: 24,
+  },
+  formCardLight: {
+    backgroundColor: 'rgba(255, 255, 255, 0.98)',
+  },
+  formCardDark: {
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
   },
 });

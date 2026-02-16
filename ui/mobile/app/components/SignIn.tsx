@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 
 export default function SignIn({ onSubmit, onSignUp }) {
+  const { t } = useTranslation('auth');
   const router = useRouter();
   const [method, setMethod] = useState<'email' | 'phone'>('email');
   const [email, setEmail] = useState('');
@@ -19,7 +21,7 @@ export default function SignIn({ onSubmit, onSignUp }) {
 
   return (
     <View style={{ width: '100%', maxWidth: 420, padding: 8 }}>
-      <Text style={{ fontSize: 22, fontWeight: '700', marginBottom: 8, color: '#fff' }}>Sign in</Text>
+      <Text style={{ fontSize: 22, fontWeight: '700', marginBottom: 8, color: '#111827' }}>{t('signIn.title')}</Text>
 
       <View style={{ flexDirection: 'row', marginBottom: 12 }}>
         <TouchableOpacity
@@ -28,10 +30,10 @@ export default function SignIn({ onSubmit, onSignUp }) {
             marginRight: 8,
             padding: 8,
             borderRadius: 8,
-            backgroundColor: method === 'email' ? '#06b6d4' : 'rgba(255,255,255,0.08)'
+            backgroundColor: method === 'email' ? '#06b6d4' : 'rgba(0,0,0,0.06)'
           }}
         >
-          <Text style={{ color: '#fff' }}>📧  Email</Text>
+          <Text style={{ color: method === 'email' ? '#fff' : '#374151' }}>📧  {t('signIn.emailOption')}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -39,33 +41,33 @@ export default function SignIn({ onSubmit, onSignUp }) {
           style={{
             padding: 8,
             borderRadius: 8,
-            backgroundColor: method === 'phone' ? '#06b6d4' : 'rgba(255,255,255,0.08)'
+            backgroundColor: method === 'phone' ? '#06b6d4' : 'rgba(0,0,0,0.06)'
           }}
         >
-          <Text style={{ color: '#fff' }}>📞  Phone</Text>
+          <Text style={{ color: method === 'phone' ? '#fff' : '#374151' }}>📞  {t('signIn.phoneOption')}</Text>
         </TouchableOpacity>
       </View>
 
       {method === 'email' ? (
         <>
-          <TextInput placeholder="Email" placeholderTextColor="#ddd" value={email} onChangeText={setEmail} keyboardType="email-address" style={{ borderWidth: 1, borderColor: 'rgba(255,255,255,0.12)', padding: 10, borderRadius: 8, marginBottom: 8, color: '#fff' }} />
-          <TextInput placeholder="Password" placeholderTextColor="#ddd" value={password} onChangeText={setPassword} secureTextEntry style={{ borderWidth: 1, borderColor: 'rgba(255,255,255,0.12)', padding: 10, borderRadius: 8, marginBottom: 12, color: '#fff' }} />
+          <TextInput placeholder={t('signIn.email')} placeholderTextColor="#9CA3AF" value={email} onChangeText={setEmail} keyboardType="email-address" style={{ borderWidth: 1, borderColor: '#D1D5DB', padding: 10, borderRadius: 8, marginBottom: 8, color: '#111827', backgroundColor: '#fff' }} />
+          <TextInput placeholder={t('signIn.password')} placeholderTextColor="#9CA3AF" value={password} onChangeText={setPassword} secureTextEntry style={{ borderWidth: 1, borderColor: '#D1D5DB', padding: 10, borderRadius: 8, marginBottom: 12, color: '#111827', backgroundColor: '#fff' }} />
         </>
       ) : (
         <>
-          <TextInput placeholder="Phone" placeholderTextColor="#ddd" value={phone} onChangeText={setPhone} keyboardType="phone-pad" style={{ borderWidth: 1, borderColor: 'rgba(255,255,255,0.12)', padding: 10, borderRadius: 8, marginBottom: 8, color: '#fff' }} />
-          <TextInput placeholder="OTP (optional)" placeholderTextColor="#ddd" value={otp} onChangeText={setOtp} style={{ borderWidth: 1, borderColor: 'rgba(255,255,255,0.12)', padding: 10, borderRadius: 8, marginBottom: 12, color: '#fff' }} />
+          <TextInput placeholder={t('signIn.phone')} placeholderTextColor="#9CA3AF" value={phone} onChangeText={setPhone} keyboardType="phone-pad" style={{ borderWidth: 1, borderColor: '#D1D5DB', padding: 10, borderRadius: 8, marginBottom: 8, color: '#111827', backgroundColor: '#fff' }} />
+          <TextInput placeholder={t('signIn.otp')} placeholderTextColor="#9CA3AF" value={otp} onChangeText={setOtp} style={{ borderWidth: 1, borderColor: '#D1D5DB', padding: 10, borderRadius: 8, marginBottom: 12, color: '#111827', backgroundColor: '#fff' }} />
         </>
       )}
 
-      <TouchableOpacity onPress={submit} disabled={loading} style={{ backgroundColor: '#06b6d4', padding: 12, borderRadius: 10, alignItems: 'center' }}>
-        {loading ? <ActivityIndicator color="#fff" /> : <Text style={{ color: '#fff', fontWeight: '600' }}>Sign in</Text>}
+      <TouchableOpacity onPress={submit} disabled={loading} style={{ backgroundColor: '#0284c7', padding: 12, borderRadius: 10, alignItems: 'center' }}>
+        {loading ? <ActivityIndicator color="#fff" /> : <Text style={{ color: '#fff', fontWeight: '600' }}>{t('signIn.submitButton')}</Text>}
       </TouchableOpacity>
 
       <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 12 }}>
-        <Text style={{ color: '#ddd' }}>Don't have an account? </Text>
+        <Text style={{ color: '#6B7280' }}>{t('signIn.noAccount')} </Text>
         <TouchableOpacity onPress={() => { if (onSignUp) onSignUp(); else router.push('/signup'); }}>
-          <Text style={{ color: '#06b6d4', fontWeight: '600' }}>Sign up</Text>
+          <Text style={{ color: '#0284c7', fontWeight: '600' }}>{t('signIn.signUp')}</Text>
         </TouchableOpacity>
       </View>
     </View>
