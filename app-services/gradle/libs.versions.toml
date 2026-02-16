@@ -1,0 +1,17 @@
+[versions]
+spring-boot = "3.2.2"
+# ... other versions
+
+[libraries]
+# Define libraries and reference versions
+spring-boot-starter-web = { group = "org.springframework.boot", name = "spring-boot-starter-web", version.ref = "spring-boot" }
+# ... other libraries
+
+[bundles]
+# Group related libraries
+spring-web-bundle = [ "spring-boot-starter-web" ]
+
+[plugins]
+# Define plugins
+spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }
+# ... other plugins

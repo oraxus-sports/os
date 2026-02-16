@@ -1,0 +1,11 @@
+query teamDetails($id: ID) {
+    teamById(id: $id) {
+        id
+        name
+        author {
+            id
+            firstName
+            lastName
+        }
+    }
+}

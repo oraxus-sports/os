@@ -1,0 +1,15 @@
+type Query {
+    teamById(id: ID): Team
+}
+
+type Team {
+    id: ID,
+    name: String,
+    member: Member
+}
+
+type Member {
+    id: ID,
+    firstName: String,
+    lastName: String
+}
