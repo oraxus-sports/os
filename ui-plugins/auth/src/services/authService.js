@@ -1,4 +1,4 @@
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8090';
 
 class AuthService {
   async login(credentials) {
@@ -25,12 +25,17 @@ class AuthService {
 
   async signup(userData) {
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/signup`, {
+      const response = await fetch(`${API_BASE_URL}/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(userData),
+        body: JSON.stringify({
+          username: userData.username || userData.email || userData.phoneNumber,
+          password: userData.password,
+          email: userData.email,
+          phoneNumber: userData.phoneNumber,
+        }),
       });
 
       if (!response.ok) {
@@ -47,12 +52,12 @@ class AuthService {
 
   async sendOTP(mobile) {
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/send-otp`, {
+      const response = await fetch(`${API_BASE_URL}/auth/start`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ mobile }),
+        body: JSON.stringify({ username: mobile, platform: 'web' }),
       });
 
       if (!response.ok) {
@@ -69,12 +74,12 @@ class AuthService {
 
   async verifyOTP(mobile, otp) {
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/verify-otp`, {
+      const response = await fetch(`${API_BASE_URL}/auth/verify`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ mobile, otp }),
+        body: JSON.stringify({ username: mobile, code: otp }),
       });
 
       if (!response.ok) {

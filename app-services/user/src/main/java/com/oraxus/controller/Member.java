@@ -1,4 +1,4 @@
-package com.example.graphqlserver;
+package com.oraxus.user;
 
 import java.util.Arrays;
 import java.util.List;

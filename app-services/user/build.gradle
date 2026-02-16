@@ -11,6 +11,10 @@ description = 'user'
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(25)
+        repositories {
+            mavenCentral()
+            maven { url 'https://repo.maven.apache.org/maven2' }
+        }
     }
 }
 

@@ -1,0 +1,28 @@
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/9.3.0/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+> Task :compileJava UP-TO-DATE
+> Task :processResources UP-TO-DATE
+> Task :classes UP-TO-DATE
+> Task :resolveMainClassName UP-TO-DATE
+
+> Task :bootRun
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.0.2)
+
+2026-02-16T14:48:32.830-05:00  INFO 55512 --- [           main] c.o.gateway.SportsGatewayApplication     : Starting SportsGatewayApplication using Java 25.0.1 with PID 55512 (C:\Users\jeevi\OneDrive\Documents\Sports\os\app-services\sports-gateway\build\classes\java\main started by jeevi in C:\Users\jeevi\OneDrive\Documents\Sports\os\app-services\sports-gateway)
+2026-02-16T14:48:32.832-05:00  INFO 55512 --- [           main] c.o.gateway.SportsGatewayApplication     : No active profile set, falling back to 1 default profile: "default"
+2026-02-16T14:48:34.019-05:00  INFO 55512 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8090 (http)
+2026-02-16T14:48:34.036-05:00  INFO 55512 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-02-16T14:48:34.036-05:00  INFO 55512 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.15]
+2026-02-16T14:48:34.108-05:00  INFO 55512 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 1210 ms
+2026-02-16T14:48:35.625-05:00  INFO 55512 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8090 (http) with context path '/'
+2026-02-16T14:48:35.631-05:00  INFO 55512 --- [           main] c.o.gateway.SportsGatewayApplication     : Started SportsGatewayApplication in 3.576 seconds (process running for 4.237)
+Terminate batch job (Y/N)? 
+^C

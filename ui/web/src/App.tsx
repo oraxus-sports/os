@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { SignUp } from '~/components/SignUp';
 import SignIn from '~/components/SignIn';
+import auth from '@sports-os/lib/services/auth';
 import { useTranslation } from 'react-i18next';
 import { Globe } from 'lucide-react';
 import ThemeSelector from '~/components/ThemeSelector';
@@ -16,24 +17,42 @@ function App() {
 
   const handleSignUp = async (data: any) => {
     setIsLoading(true);
-    console.log('Sign up data:', data);
-    
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      const payload = { username: data.username || data.email, password: data.password, email: data.email, phoneNumber: data.phone };
+      const res = await auth.register(payload as any);
       setIsLoading(false);
-      alert(`Account created! Sign in method: ${data.signInMethod}`);
-    }, 2000);
+      if (res && res.success) {
+        alert('Account created — please sign in');
+        setShowSignIn(true);
+      } else {
+        alert('Registration failed: ' + (res?.message || JSON.stringify(res)));
+      }
+    } catch (e: any) {
+      setIsLoading(false);
+      alert('Registration error: ' + (e?.message || e));
+    }
   };
 
   const handleSignInClick = () => setShowSignIn(true);
 
   const handleSignIn = async (data: any) => {
     setIsLoading(true);
-    console.log('Sign in data:', data);
-    setTimeout(() => {
+    try {
+      const payload = { username: data.email || data.phone, password: data.password, platform: 'web' };
+      const res = await auth.login(payload as any);
       setIsLoading(false);
-      alert(`Signed in (method: ${data.method ?? data.signInMethod})`);
-    }, 1200);
+      if (res && res.success) {
+        alert('Signed in');
+      } else if (res && res.session) {
+        // handle challenge if required
+        alert('Additional challenge required: ' + (res.challengeName || ''));
+      } else {
+        alert('Sign in failed: ' + (res?.message || JSON.stringify(res)));
+      }
+    } catch (e: any) {
+      setIsLoading(false);
+      alert('Sign in error: ' + (e?.message || e));
+    }
   };
 
   const changeLanguage = (lng: string) => {

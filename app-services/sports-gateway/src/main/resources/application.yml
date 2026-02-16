@@ -1,0 +1,16 @@
+server:
+  port: 8090
+
+cognito:
+  region: us-east-1 # set your region
+  userPoolId: "us-east-1_fSEBx1flb" # set your user pool id
+  # App client IDs. Prefer separate clients for web and mobile.
+  clientIdWeb: "49hds50vnolll72jteqkpr6e5"   # web app client id (no secret)
+  # Client secrets: DO NOT COMMIT. Store in a secrets manager or set as env vars.
+  # If you set env var COGNITO_CLIENT_SECRET_WEB it maps to property cognito.clientSecretWeb
+  # If you set env var COGNITO_CLIENT_SECRET_MOBILE it maps to property cognito.clientSecretMobile
+  clientIdMobile: "" # set your mobile app client id (no secret)
+  # clientId: ""   # legacy single client id (optional)
+
+user-service:
+  url: http://localhost:8080 # user service base URL
