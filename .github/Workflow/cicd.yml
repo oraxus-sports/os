@@ -21,7 +21,7 @@ jobs:
           cache-dependency-path: ui-plugins/auth/package-lock.json
       
       - name: Install dependencies
-        working-directory: ./ui-plugins/auth
+        working-directory: ./auth
         run: npm ci
 
       - name: Configure AWS credentials
