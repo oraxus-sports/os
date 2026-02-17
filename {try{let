@@ -1,1 +1,0 @@
-(async ()= r=await fetch('http://localhost:8090/auth/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:'testuser@example.com',password:'P@ssword123',email:'testuser@example.com',phoneNumber:'+15555550123'})});let t=await r.text();console.log('STATUS',r.status);console.log(t)}catch(e){console.error(e)}})();
